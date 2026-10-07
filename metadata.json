@@ -1,0 +1,6 @@
+{
+  "name": "POLYGON",
+  "description": "POLYGON - Premium digital asset rewards and wallet platform. BE TRUSTFULL TO USE POLYGON.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
