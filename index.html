@@ -12,20 +12,18 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <script>
-      // Fallback for GitHub Pages branch deployment serving root index.html
-      if (window.location.hostname.endsWith('github.io')) {
-        var uncompiled = document.querySelector('script[src*="main.tsx"]');
-        if (uncompiled && !window.location.pathname.includes('/dist')) {
-          var target = window.location.pathname.replace(/\/$/, '') + '/dist/';
-          window.location.replace(target);
-        }
-      }
-    </script>
+    <link rel="stylesheet" crossorigin href="./assets/style.css">
   </head>
   <body class="bg-[#0B0D14] text-slate-100 antialiased selection:bg-purple-600 selection:text-white min-h-screen">
     <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+
+    <script type="module">
+      const isDev = window.location.port === '3000' || window.location.hostname.includes('run.app');
+      const s = document.createElement('script');
+      s.type = 'module';
+      s.src = isDev ? '/src/main.tsx' : './assets/app.js';
+      document.body.appendChild(s);
+    </script>
   </body>
 </html>
 
