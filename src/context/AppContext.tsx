@@ -84,49 +84,67 @@ interface AppContextType {
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
+function getSafeStorage<T>(key: string, fallback: T): T {
+  try {
+    if (typeof window !== 'undefined' && window.localStorage) {
+      const saved = localStorage.getItem(key);
+      return saved ? JSON.parse(saved) : fallback;
+    }
+  } catch {
+    // Fallback on restricted storage environments
+  }
+  return fallback;
+}
+
+function setSafeStorage<T>(key: string, value: T): void {
+  try {
+    if (typeof window !== 'undefined' && window.localStorage) {
+      localStorage.setItem(key, JSON.stringify(value));
+    }
+  } catch {
+    // Ignore quota or security restrictions
+  }
+}
+
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [currentRoute, setCurrentRoute] = useState<ActiveRoute>('home');
   const [user, setUser] = useState<UserProfile | null>(INITIAL_DEMO_USER);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authModalMode, setAuthModalMode] = useState<'login' | 'register' | 'forgot'>('login');
 
-  const [wallet, setWallet] = useState<WalletState>(() => {
-    const saved = localStorage.getItem('polygon_wallet');
-    return saved ? JSON.parse(saved) : INITIAL_WALLET;
-  });
+  const [wallet, setWallet] = useState<WalletState>(() =>
+    getSafeStorage('polygon_wallet', INITIAL_WALLET)
+  );
 
-  const [products, setProducts] = useState<PlatformProduct[]>(() => {
-    const saved = localStorage.getItem('polygon_products');
-    return saved ? JSON.parse(saved) : INITIAL_PRODUCTS;
-  });
+  const [products, setProducts] = useState<PlatformProduct[]>(() =>
+    getSafeStorage('polygon_products', INITIAL_PRODUCTS)
+  );
 
-  const [transactions, setTransactions] = useState<TransactionRecord[]>(() => {
-    const saved = localStorage.getItem('polygon_transactions');
-    return saved ? JSON.parse(saved) : INITIAL_TRANSACTIONS;
-  });
+  const [transactions, setTransactions] = useState<TransactionRecord[]>(() =>
+    getSafeStorage('polygon_transactions', INITIAL_TRANSACTIONS)
+  );
 
-  const [referral, setReferral] = useState<ReferralState>(() => {
-    const saved = localStorage.getItem('polygon_referral');
-    return saved ? JSON.parse(saved) : INITIAL_REFERRAL;
-  });
+  const [referral, setReferral] = useState<ReferralState>(() =>
+    getSafeStorage('polygon_referral', INITIAL_REFERRAL)
+  );
 
   const [toasts, setToasts] = useState<ToastNotification[]>([]);
 
   // Sync to local storage
   useEffect(() => {
-    localStorage.setItem('polygon_wallet', JSON.stringify(wallet));
+    setSafeStorage('polygon_wallet', wallet);
   }, [wallet]);
 
   useEffect(() => {
-    localStorage.setItem('polygon_products', JSON.stringify(products));
+    setSafeStorage('polygon_products', products);
   }, [products]);
 
   useEffect(() => {
-    localStorage.setItem('polygon_transactions', JSON.stringify(transactions));
+    setSafeStorage('polygon_transactions', transactions);
   }, [transactions]);
 
   useEffect(() => {
-    localStorage.setItem('polygon_referral', JSON.stringify(referral));
+    setSafeStorage('polygon_referral', referral);
   }, [referral]);
 
   const addToast = (message: string, type: 'success' | 'error' | 'info' = 'info') => {
